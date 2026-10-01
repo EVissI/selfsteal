@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Finance dashboard">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f766e"/><stop offset="1" stop-color="#14b8a6"/></linearGradient></defs>
+<rect width="640" height="400" fill="url(#a)"/>
+<circle cx="560" cy="60" r="110" fill="#fff" opacity=".08"/>
+<rect x="60" y="56" width="520" height="288" rx="18" fill="#fff"/>
+<rect x="84" y="80" width="110" height="14" rx="7" fill="#0f3d3a"/>
+<g fill="#e6f6f4"><rect x="84" y="112" width="148" height="68" rx="12"/><rect x="246" y="112" width="148" height="68" rx="12"/><rect x="408" y="112" width="148" height="68" rx="12"/></g>
+<g fill="#0f766e"><rect x="100" y="128" width="60" height="10" rx="5"/><rect x="262" y="128" width="60" height="10" rx="5"/><rect x="424" y="128" width="60" height="10" rx="5"/></g>
+<g fill="#0f3d3a"><rect x="100" y="148" width="86" height="18" rx="6"/><rect x="262" y="148" width="72" height="18" rx="6"/><rect x="424" y="148" width="96" height="18" rx="6"/></g>
+<rect x="84" y="198" width="472" height="130" rx="12" fill="#f5fbfa"/>
+<path d="M100 300 L150 262 L200 278 L252 232 L304 252 L356 214 L408 238 L460 218 L540 236" fill="none" stroke="#14b8a6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M100 300 L150 262 L200 278 L252 232 L304 252 L356 214 L408 238 L460 218 L540 236 V316 H100Z" fill="#14b8a6" opacity=".12"/>
+</svg>

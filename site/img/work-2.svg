@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Travel app">
+<defs>
+<linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a5a"/><stop offset="1" stop-color="#e8505b"/></linearGradient>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9a8"/><stop offset="1" stop-color="#ffb08a"/></linearGradient>
+</defs>
+<rect width="640" height="400" fill="url(#b)"/>
+<circle cx="130" cy="90" r="120" fill="#fff" opacity=".1"/>
+<g transform="translate(220 34)">
+<rect width="200" height="340" rx="30" fill="#2a1c24"/>
+<rect x="9" y="14" width="182" height="312" rx="22" fill="#fff"/>
+<rect x="9" y="14" width="182" height="150" rx="22" fill="url(#sky)"/>
+<circle cx="140" cy="62" r="22" fill="#fff" opacity=".85"/>
+<path d="M9 164 L60 104 L98 140 L128 96 L191 164Z" fill="#c8434e" opacity=".85"/>
+<path d="M9 164 L48 128 L84 156 L120 120 L191 164Z" fill="#8f2d3d"/>
+<rect x="24" y="182" width="96" height="12" rx="6" fill="#2a1c24"/>
+<rect x="24" y="204" width="146" height="8" rx="4" fill="#e3d7da"/>
+<rect x="24" y="220" width="116" height="8" rx="4" fill="#e3d7da"/>
+<rect x="24" y="246" width="70" height="26" rx="13" fill="#e8505b"/>
+<rect x="104" y="246" width="66" height="26" rx="13" fill="#fbe4e4"/>
+<rect x="24" y="288" width="146" height="22" rx="11" fill="#f6eeee"/>
+</g>
+</svg>

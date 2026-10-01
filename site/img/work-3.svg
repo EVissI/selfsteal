@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Online store">
+<defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4338ca"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="640" height="400" fill="url(#c)"/>
+<circle cx="80" cy="340" r="130" fill="#fff" opacity=".08"/>
+<rect x="50" y="48" width="540" height="304" rx="18" fill="#fff"/>
+<rect x="50" y="48" width="540" height="40" rx="18" fill="#f4f2ff"/><rect x="50" y="70" width="540" height="18" fill="#f4f2ff"/>
+<rect x="74" y="62" width="70" height="12" rx="6" fill="#4338ca"/>
+<rect x="470" y="62" width="90" height="12" rx="6" fill="#c9c3f5"/>
+<g>
+<rect x="74" y="108" width="120" height="120" rx="12" fill="#ede9fe"/><circle cx="134" cy="160" r="26" fill="#7c3aed"/><path d="M104 206q30-34 60 0" fill="#a78bfa"/>
+<rect x="74" y="238" width="80" height="9" rx="4.5" fill="#1e1b4b"/><rect x="74" y="256" width="48" height="8" rx="4" fill="#9a93d6"/>
+<rect x="214" y="108" width="120" height="120" rx="12" fill="#fce7f3"/><rect x="250" y="136" width="48" height="64" rx="8" fill="#ec4899"/><rect x="262" y="124" width="24" height="16" rx="6" fill="#be185d"/>
+<rect x="214" y="238" width="80" height="9" rx="4.5" fill="#1e1b4b"/><rect x="214" y="256" width="48" height="8" rx="4" fill="#9a93d6"/>
+<rect x="354" y="108" width="120" height="120" rx="12" fill="#e0f2fe"/><path d="M384 196l30-62 30 62z" fill="#0ea5e9"/><circle cx="414" cy="150" r="10" fill="#fff"/>
+<rect x="354" y="238" width="80" height="9" rx="4.5" fill="#1e1b4b"/><rect x="354" y="256" width="48" height="8" rx="4" fill="#9a93d6"/>
+<rect x="494" y="108" width="76" height="120" rx="12" fill="#f4f2ff"/><rect x="506" y="124" width="52" height="10" rx="5" fill="#c9c3f5"/><rect x="506" y="144" width="40" height="10" rx="5" fill="#c9c3f5"/>
+<rect x="506" y="188" width="52" height="28" rx="14" fill="#4338ca"/>
+</g>
+<rect x="74" y="288" width="496" height="40" rx="12" fill="#f4f2ff"/>
+</svg>

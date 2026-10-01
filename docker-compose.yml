@@ -1,0 +1,59 @@
+# Selfsteal-заглушка для Reality: nginx слушает 127.0.0.1:${NGINX_PORT},
+# Xray (Reality) на :443 пересылает туда нераспознанный трафик.
+services:
+  certbot-init:
+    image: certbot/dns-cloudflare:latest
+    network_mode: host
+    restart: "no"
+    env_file: .env
+    volumes:
+      - ./certs:/etc/letsencrypt
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        umask 077
+        echo "dns_cloudflare_api_token = $$CF_API_TOKEN" > /tmp/cf.ini
+        if [ ! -f "/etc/letsencrypt/live/$$ROOT_DOMAIN/fullchain.pem" ]; then
+          certbot certonly --non-interactive --agree-tos -m "$$LE_EMAIL" \
+            --dns-cloudflare --dns-cloudflare-credentials /tmp/cf.ini \
+            --dns-cloudflare-propagation-seconds 30 \
+            -d "$$ROOT_DOMAIN" -d "*.$$ROOT_DOMAIN"
+        fi
+
+  certbot-renew:
+    image: certbot/dns-cloudflare:latest
+    network_mode: host
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      certbot-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./certs:/etc/letsencrypt
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        umask 077
+        echo "dns_cloudflare_api_token = $$CF_API_TOKEN" > /tmp/cf.ini
+        while :; do
+          certbot renew --quiet --dns-cloudflare --dns-cloudflare-credentials /tmp/cf.ini
+          sleep 12h
+        done
+
+  nginx:
+    image: nginx:stable-alpine
+    network_mode: host          # чтобы Xray на хосте видел 127.0.0.1:${NGINX_PORT}
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      certbot-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./site:/usr/share/nginx/html:ro
+      - ./certs:/etc/letsencrypt:ro
+    # перечитываем сертификат раз в сутки после возможного обновления
+    command: >
+      /bin/sh -c "(while :; do sleep 24h; nginx -s reload; done) &
+      exec nginx -g 'daemon off;'"
