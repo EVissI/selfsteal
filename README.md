@@ -1,11 +1,17 @@
 # Selfsteal-заглушка для Reality (nginx)
 
+Сертификат выпускается Let's Encrypt через **HTTP-01** — без Cloudflare-токена.
+Нужен лишь публично доступный **порт 80** на ноде. Серт выпускается на один
+`SNI_HOST` (без wildcard), чего для selfsteal достаточно.
+
 ## Запуск
-1. DNS в Cloudflare: A-запись `SNI_HOST` -> IP ноды, **DNS only (серое облако)**.
-2. `cp .env.example .env`, заполнить домен, токен CF, email.
-3. Выбрать сайт через `SITE_INDEX` в `.env` (см. ниже).
-4. `docker compose up -d` (первый старт выпустит wildcard-сертификат, ~1 мин).
-5. Проверка на ноде:
+1. DNS: A-запись `SNI_HOST` -> IP ноды, **DNS only / без проксирования**
+   (если домен в Cloudflare — серое облако; оранжевое ломает HTTP-01).
+2. Открыть **порт 80** (ACME) и **443** (Xray) на ноде наружу.
+3. `cp .env.example .env`, заполнить `SNI_HOST` и `LE_EMAIL`.
+4. Выбрать сайт через `SITE_INDEX` в `.env` (см. ниже).
+5. `docker compose up -d` (первый старт выпустит сертификат, ~30–60 c).
+6. Проверка на ноде:
    `curl -vk --resolve at.example.com:9443:127.0.0.1 https://at.example.com:9443/`
 
 ## Выбор сайта-заглушки
@@ -40,4 +46,13 @@
 ```
 Клиент: `serverName` = `at.example.com`, `address` = `at.example.com` или IP ноды.
 
-Порт 443 занимает Xray, nginx на 443 не слушает. Порт 80 держит nginx (редирект на https).
+Порт 443 занимает Xray, nginx на 443 не слушает. Порт 80 держит nginx: отдаёт
+ACME-challenge для продления серта и редиректит остальное на https.
+
+## Сертификат (Let's Encrypt, HTTP-01)
+- Первичный выпуск — контейнер `certbot-init` (standalone на порту 80, пока nginx
+  не поднят), только если серта ещё нет.
+- Продление — контейнер `certbot-renew` раз в 12 ч через webroot
+  (`./certbot-www`), который nginx отдаёт на `/.well-known/acme-challenge/`.
+  Downtime при продлении нет — порт 80 остаётся за nginx.
+- Сертификаты лежат в `./certs` (в git не коммитятся).

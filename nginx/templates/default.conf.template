@@ -1,10 +1,16 @@
 server_tokens off;
 
-# 80 -> https (как у обычного сайта)
+# 80: отдаём ACME http-01 challenge (продление серта) и редиректим остальное на https
 server {
     listen 80;
     server_name ${SNI_HOST};
-    return 301 https://$host$request_uri;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }
 
 # Reality dest. Только локально, TLS 1.3 + h2 (обязательные условия Reality)
@@ -13,8 +19,8 @@ server {
     http2 on;
     server_name ${SNI_HOST};
 
-    ssl_certificate     /etc/letsencrypt/live/${ROOT_DOMAIN}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${ROOT_DOMAIN}/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/${SNI_HOST}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${SNI_HOST}/privkey.pem;
     ssl_protocols       TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
     ssl_session_tickets off;

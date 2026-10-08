@@ -1,28 +1,31 @@
 # Selfsteal-заглушка для Reality: nginx слушает 127.0.0.1:${NGINX_PORT},
 # Xray (Reality) на :443 пересылает туда нераспознанный трафик.
+# Сертификат выпускается Let's Encrypt через HTTP-01 (нужен доступный порт 80),
+# без Cloudflare-токена и без wildcard — только на SNI_HOST.
 services:
+  # Первичный выпуск: standalone на порту 80 (nginx ещё не поднят).
   certbot-init:
-    image: certbot/dns-cloudflare:latest
+    image: certbot/certbot:latest
     network_mode: host
     restart: "no"
     env_file: .env
     volumes:
       - ./certs:/etc/letsencrypt
+      - ./certbot-www:/var/www/certbot
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         set -e
-        umask 077
-        echo "dns_cloudflare_api_token = $$CF_API_TOKEN" > /tmp/cf.ini
-        if [ ! -f "/etc/letsencrypt/live/$$ROOT_DOMAIN/fullchain.pem" ]; then
-          certbot certonly --non-interactive --agree-tos -m "$$LE_EMAIL" \
-            --dns-cloudflare --dns-cloudflare-credentials /tmp/cf.ini \
-            --dns-cloudflare-propagation-seconds 30 \
-            -d "$$ROOT_DOMAIN" -d "*.$$ROOT_DOMAIN"
+        if [ ! -f "/etc/letsencrypt/live/$$SNI_HOST/fullchain.pem" ]; then
+          certbot certonly --standalone --http-01-port 80 \
+            --non-interactive --agree-tos -m "$$LE_EMAIL" \
+            --cert-name "$$SNI_HOST" -d "$$SNI_HOST"
         fi
 
+  # Продление: webroot, пока nginx держит порт 80 (без конфликта за порт).
+  # --keep-until-expiring = no-op, пока серт не близок к истечению.
   certbot-renew:
-    image: certbot/dns-cloudflare:latest
+    image: certbot/certbot:latest
     network_mode: host
     restart: unless-stopped
     env_file: .env
@@ -31,14 +34,15 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./certs:/etc/letsencrypt
+      - ./certbot-www:/var/www/certbot
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        umask 077
-        echo "dns_cloudflare_api_token = $$CF_API_TOKEN" > /tmp/cf.ini
         while :; do
-          certbot renew --quiet --dns-cloudflare --dns-cloudflare-credentials /tmp/cf.ini
           sleep 12h
+          certbot certonly --webroot -w /var/www/certbot \
+            --non-interactive --agree-tos -m "$$LE_EMAIL" \
+            --keep-until-expiring --cert-name "$$SNI_HOST" -d "$$SNI_HOST" || true
         done
 
   nginx:
@@ -53,6 +57,7 @@ services:
       - ./nginx/templates:/etc/nginx/templates:ro
       - ./sites:/usr/share/nginx/html:ro
       - ./certs:/etc/letsencrypt:ro
+      - ./certbot-www:/var/www/certbot:ro
     # Выбираем каталог сайта по SITE_INDEX (1|2|...|random), экспортируем SITE_DIR
     # для envsubst, затем отдаём управление штатному entrypoint nginx (первый
     # аргумент — nginx, поэтому подстановка шаблонов отрабатывает штатно).
