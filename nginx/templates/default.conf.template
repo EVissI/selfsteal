@@ -19,7 +19,7 @@ server {
     ssl_session_cache   shared:SSL:10m;
     ssl_session_tickets off;
 
-    root /usr/share/nginx/html;
+    root /usr/share/nginx/html/${SITE_DIR};
     index index.html;
     error_page 404 /404.html;
 

@@ -51,9 +51,29 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./nginx/templates:/etc/nginx/templates:ro
-      - ./site:/usr/share/nginx/html:ro
+      - ./sites:/usr/share/nginx/html:ro
       - ./certs:/etc/letsencrypt:ro
-    # перечитываем сертификат раз в сутки после возможного обновления
-    command: >
-      /bin/sh -c "(while :; do sleep 24h; nginx -s reload; done) &
-      exec nginx -g 'daemon off;'"
+    # Выбираем каталог сайта по SITE_INDEX (1|2|...|random), экспортируем SITE_DIR
+    # для envsubst, затем отдаём управление штатному entrypoint nginx (первый
+    # аргумент — nginx, поэтому подстановка шаблонов отрабатывает штатно).
+    # Фоном раз в сутки перечитываем сертификат после возможного обновления.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        html=/usr/share/nginx/html
+        if [ "$$SITE_INDEX" = "random" ]; then
+          n=$$(ls -d $$html/*/ 2>/dev/null | wc -l)
+          [ "$$n" -gt 0 ] || { echo "selfsteal: no sites found in $$html" >&2; exit 1; }
+          r=$$(( $$(od -An -N2 -tu2 /dev/urandom) % n + 1 ))
+          SITE_DIR=$$(ls -d $$html/*/ | sed -n "$${r}p" | xargs -n1 basename)
+        else
+          SITE_DIR=$$SITE_INDEX
+        fi
+        if [ ! -f "$$html/$$SITE_DIR/index.html" ]; then
+          echo "selfsteal: site '$$SITE_DIR' not found in $$html" >&2; exit 1
+        fi
+        export SITE_DIR
+        echo "selfsteal: serving site '$$SITE_DIR' (SITE_INDEX=$$SITE_INDEX)"
+        (while :; do sleep 24h; nginx -s reload; done) &
+        exec /docker-entrypoint.sh nginx -g 'daemon off;'
