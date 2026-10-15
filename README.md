@@ -7,18 +7,24 @@
 ## Быстрый запуск (одной командой)
 После клонирования и настройки DNS/портов:
 ```bash
-./install.sh
+bash install.sh
 ```
 Скрипт спросит `SNI_HOST`, `LE_EMAIL`, `SITE_INDEX`, создаст `.env` и поднимет контейнеры.
+
+> Запускаем через `bash install.sh`, а не `./install.sh`: так не важен бит
+> выполнения файла (он часто теряется при `git clone`/переносе) и не мешает
+> монтирование каталога с опцией `noexec`. Если docker требует прав — запустите
+> `sudo bash install.sh`; к docker-командам внутри скрипт сам добавит `sudo`.
+
 Без интерактива:
 ```bash
-SNI_HOST=at.example.com LE_EMAIL=you@example.com SITE_INDEX=1 ./install.sh
+SNI_HOST=at.example.com LE_EMAIL=you@example.com SITE_INDEX=1 bash install.sh
 ```
 Полностью с нуля на чистом сервере (Docker уже стоит):
 ```bash
-git clone <URL-репозитория> selfsteal && cd selfsteal && ./install.sh
+git clone <URL-репозитория> selfsteal && cd selfsteal && bash install.sh
 ```
-Существующий `.env` не перезаписывается; пересоздать — `FORCE_ENV=1 ./install.sh`.
+Существующий `.env` не перезаписывается; пересоздать — `FORCE_ENV=1 bash install.sh`.
 
 ## Запуск (вручную)
 1. DNS: A-запись `SNI_HOST` -> IP ноды, **DNS only / без проксирования**
