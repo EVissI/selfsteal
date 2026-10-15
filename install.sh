@@ -14,10 +14,26 @@ die() { printf '\033[1;31m[selfsteal] %s\033[0m\n' "$*" >&2; exit 1; }
 
 # --- проверки окружения ---
 command -v docker >/dev/null 2>&1 || die "docker не найден в PATH"
-if docker compose version >/dev/null 2>&1; then
-  DC="docker compose"
+
+# Определяем, нужен ли sudo для доступа к docker-демону
+# (например, пользователь не в группе docker). Работаем и там, где нужен sudo.
+SUDO=""
+if ! docker info >/dev/null 2>&1; then
+  if [ "$(id -u)" -eq 0 ]; then
+    die "docker-демон недоступен. Запущен ли dockerd?"
+  elif command -v sudo >/dev/null 2>&1; then
+    SUDO="sudo"
+    say "docker недоступен без прав — использую sudo (может потребоваться пароль)"
+    $SUDO docker info >/dev/null 2>&1 || die "docker-демон недоступен даже через sudo. Запущен ли dockerd?"
+  else
+    die "docker-демон недоступен, и sudo не найден. Добавьте пользователя в группу docker или запустите dockerd."
+  fi
+fi
+
+if $SUDO docker compose version >/dev/null 2>&1; then
+  DC="$SUDO docker compose"
 elif command -v docker-compose >/dev/null 2>&1; then
-  DC="docker-compose"
+  DC="$SUDO docker-compose"
 else
   die "не найден 'docker compose' (v2) или 'docker-compose'"
 fi
