@@ -22,7 +22,7 @@ SNI_HOST=at.example.com LE_EMAIL=you@example.com SITE_INDEX=1 bash install.sh
 ```
 Полностью с нуля на чистом сервере (Docker уже стоит):
 ```bash
-git clone <URL-репозитория> selfsteal && cd selfsteal && bash install.sh
+git clone https://github.com/EVissI/selfsteal.git selfsteal && cd selfsteal && bash install.sh
 ```
 Существующий `.env` не перезаписывается; пересоздать — `FORCE_ENV=1 bash install.sh`.
 
